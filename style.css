@@ -1,6 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
 
-body { font-family: 'Fredoka One', cursive; margin: 0; overflow: hidden; }
+body { 
+    font-family: 'Fredoka One', cursive; 
+    margin: 0; 
+    overflow: hidden; 
+    touch-action: manipulation;
+}
 .hidden { display: none; }
 button { user-select: none; outline: none !important; }
 
@@ -22,3 +27,7 @@ button { user-select: none; outline: none !important; }
 
 .blur-content { filter: blur(8px); opacity: 0.3; pointer-events: none; }
 .heart-lost { opacity: 0.15; filter: grayscale(1); transform: scale(0.8); }
+
+/* Custom Scrollbar untuk Leaderboard */
+#list-juara::-webkit-scrollbar { width: 4px; }
+#list-juara::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
