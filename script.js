@@ -1,4 +1,3 @@
-// URL API Baru Kamu
 const API_URL = "https://script.google.com/macros/s/AKfycbx-dDMKDqND3kRV6DpZL3qgj4UY8uYGydEfGYC0IyS3i3RATw36WhQPYTz4W11QvCNv/exec";
 
 let skor = 0;
@@ -6,10 +5,7 @@ let namaPlayer = "";
 let jawabanBenar = "";
 let isPaused = false;
 let nyawa = 3;
-let timerInterval;
-let waktuSisa = 100;
 
-// KAMUS INFINITY (Bisa ditambah terus ke bawah)
 const kamus = [
     { en: "Red", id: "Merah" }, { en: "Blue", id: "Biru" }, { en: "Green", id: "Hijau" },
     { en: "Yellow", id: "Kuning" }, { en: "Black", id: "Hitam" }, { en: "White", id: "Putih" },
@@ -29,7 +25,6 @@ window.onload = () => {
     if(savedName) document.getElementById('nama').value = savedName;
 };
 
-// --- FITUR SUARA MANUSIA ---
 function bacakan(teks, lang = 'en-US') {
     if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
@@ -45,7 +40,6 @@ async function loadLeaderboard() {
     try {
         const res = await fetch(`${API_URL}?action=getLeaderboard`);
         const data = await res.json();
-        
         if (data && data.length > 0) {
             const top5 = data.sort((a, b) => b.skor - a.skor).slice(0, 5);
             listContainer.innerHTML = top5.map((p, i) => `
@@ -65,13 +59,10 @@ async function loadLeaderboard() {
 function mulaiGame() {
     namaPlayer = document.getElementById('nama').value.trim();
     if(!namaPlayer) return Swal.fire('Oops!', 'Enter your name!', 'warning');
-    
     localStorage.setItem('english_nama', namaPlayer);
     skor = 0; nyawa = 3; isPaused = false;
-    
     document.getElementById('start-screen').classList.add('hidden');
     document.getElementById('game-screen').classList.remove('hidden');
-    
     updateNyawaUI();
     buatSoal();
 }
@@ -86,8 +77,7 @@ function updateNyawaUI() {
 function buatSoal() {
     try {
         const target = kamus[Math.floor(Math.random() * kamus.length)];
-        const tipe = Math.random() > 0.5 ? 0 : 1; // 0: EN->ID, 1: ID->EN
-        
+        const tipe = Math.random() > 0.5 ? 0 : 1; 
         let soalTeks = "";
         if (tipe === 0) {
             soalTeks = `Apa bahasa Indonesianya "${target.en}"?`;
@@ -98,11 +88,9 @@ function buatSoal() {
             jawabanBenar = target.en;
             bacakan(soalTeks, 'id-ID'); 
         }
-
         document.getElementById('pertanyaan').innerText = soalTeks;
         document.getElementById('display-skor').innerText = skor;
 
-        // Racik Pilihan Jawaban
         let pilihan = [jawabanBenar];
         while(pilihan.length < 4) {
             const acak = kamus[Math.floor(Math.random() * kamus.length)];
@@ -111,7 +99,6 @@ function buatSoal() {
         }
         pilihan.sort(() => Math.random() - 0.5);
 
-        // Render Tombol
         const container = document.getElementById('pilihan-jawaban');
         container.innerHTML = "";
         pilihan.forEach(teks => {
@@ -124,33 +111,12 @@ function buatSoal() {
             };
             container.appendChild(btn);
         });
-
-        startTimer();
     } catch (err) { console.error(err); }
-}
-
-function startTimer() {
-    clearInterval(timerInterval);
-    waktuSisa = 100;
-    const bar = document.getElementById('timer-bar');
-    const speed = Math.max(25, 100 - Math.floor(skor/2)); 
-
-    timerInterval = setInterval(() => {
-        if (!isPaused) {
-            waktuSisa -= 1;
-            bar.style.width = waktuSisa + "%";
-            if (waktuSisa <= 0) {
-                clearInterval(timerInterval);
-                kurangiNyawa("Time Out! ⏰");
-            }
-        }
-    }, speed);
 }
 
 async function cekJawaban(pilih) {
     if (isPaused) return;
     if (pilih === jawabanBenar) {
-        clearInterval(timerInterval);
         skor += 10;
         confetti({ particleCount: 40, spread: 60, origin: { y: 0.8 } });
         setTimeout(buatSoal, 400);
@@ -160,7 +126,6 @@ async function cekJawaban(pilih) {
 }
 
 async function kurangiNyawa(msg) {
-    clearInterval(timerInterval);
     nyawa--;
     updateNyawaUI();
     document.getElementById('app').classList.add('shake');
@@ -191,5 +156,4 @@ function togglePause() {
     document.getElementById('pause-screen').classList.toggle('hidden');
     document.getElementById('game-content').classList.toggle('blur-content');
     if(!isPaused) bacakan(document.getElementById('pertanyaan').innerText);
-                }
-                
+            }
